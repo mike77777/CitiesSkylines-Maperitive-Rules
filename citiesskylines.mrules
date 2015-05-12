@@ -6,7 +6,14 @@
 // Updates by Michael <quelbs_at_gmail.com>
 // Icons used: Map icons CC-0 from SJJB Management (http://www.sjjb.co.uk/mapicons)
 
-// Customized for CitiesSkylines by /u/mike77777 (reddit)
+// History:
+// --------
+// 2011-07-26: Updated by Michael <quelbs_at_gmail.com>
+//		- added icons for parks, parking, restaurants and railway
+//		- added names for parks, restaurants
+//		- added rendering of playground, sport, living_street and steps
+//		- added path (thin solid line) and motorway (thicker orange line) rendering adjusted
+//		- added special rendering for tunnels
 
 features
 	points
@@ -37,9 +44,11 @@ features
 		motorway : highway=motorway
 		motorway link : @isOneOf(highway, motorway_link, secondary_link)
 		major road : @isOneOf(highway, trunk, trunk_link, primary, primary_link, secondary, tertiary)
-		minor road : @isOneOf(highway, unclassified, residential, service, living_street, road) OR (highway=track AND (@isOneOf(tracktype, grade1, grade2, grade3) OR NOT tracktype))
+		main road : @isOneOf(highway, unclassified, residential, service, living_street, road)
+		minor road : (highway=track AND (@isOneOf(tracktype, grade1, grade2, grade3) OR NOT tracktype))
 		path : @isOneOf(highway, path, footway, pedestrian, steps) OR (highway=track AND @isOneOf(tracktype, grade4, grade5))
-
+		contour major : contour[@isMulti(elevation, 100)]
+		contour minor : contour[@isMulti(elevation, 20) and not @isMulti(elevation, 100)]
 		water line : waterway=stream OR waterway=river
 
 	areas
@@ -319,8 +328,7 @@ rules
 			font-weight : normal
 			text-halo-color : #fffd8b
 		draw : text
-
-	target : minor road
+	target : main road
 		define
 			min-zoom : 10.5
 			max-zoom : 13.1
@@ -336,6 +344,23 @@ rules
 			border-style : solid
 			border-color : #D4CCB8
 			border-width : 1
+			line-end-cap: round
+		for : tunnel=yes
+			define
+				border-style : dot
+		draw : line
+		define
+			min-zoom : 15
+			max-zoom : 20
+			font-size : 13:10
+			font-stretch : 0.85
+		draw : text
+	target : minor road
+		define
+			min-zoom : 13.1
+			max-zoom : 20
+			line-color : #cccccc
+			line-width : 13:1;14:1;15:2;18:5
 			line-end-cap: round
 		for : tunnel=yes
 			define
@@ -382,6 +407,28 @@ rules
 			line-color : #A5BFDD
 			line-width : 14:1;16:5;20:10
 		draw : line
+
+	target: contour*
+		define
+			line-color : #7f3300
+			line-opacity : 0.35
+			curved : true
+		if : *major
+			define
+				map.rendering.contour.label : true
+				min-zoom : 9
+				line-width : 11:0.1;11.9:1;12:2
+				font-size : 10
+				font-style : italic
+				font-weight : normal
+				text-halo-width : 35%
+				text-halo-opacity : 1
+				text-halo-color : #F1EEE8
+		else
+			define
+				min-zoom : 12
+				line-width : 1
+		draw : contour
 
 // landuse
 
